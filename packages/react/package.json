@@ -1,6 +1,6 @@
 {
   "name": "@stitches/react",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "description": "The modern CSS-in-JS library",
   "type": "module",
   "main": "dist/index.cjs",
@@ -47,7 +47,8 @@
     "react": ">= 16.3.0"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+		"@withneutron:registry": "https://npm.pkg.github.com"
   },
   "keywords": [
     "component",

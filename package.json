@@ -8,6 +8,9 @@
     "Abdulhadi Alhallak <abdulhadi@modulz.app>",
     "Jonathan Neal <jonathan@modulz.app>"
   ],
+  "publishConfig": {
+    "@withneutron:registry": "https://npm.pkg.github.com"
+  }, 
   "scripts": {
     "build": "node .task/build.js",
     "build:watch": "node .task/build.js --watch",
