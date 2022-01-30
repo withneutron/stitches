@@ -16,6 +16,60 @@ const comma = /\s*,\s*(?![^()]*\))/
 /** Default toString method of Objects. */
 const toStringOfObject = Object.prototype.toString
 
+const shortcutMap = {
+	ml: 'mr',
+	mr: 'ml',
+	pl: 'pr',
+	pr: 'pl',
+	radiusLeft: 'radiusRight',
+	radiusRight: 'radiusLeft',
+}
+
+/** Account for RTL languages in all styles */
+export function generateDirectionalCSS(/** @type {Style} */ css) {
+	if (!css || css.length === 0) {
+		return css
+	}
+
+	/** @type {Style} */
+  const styles = {}
+
+  for (const rule in css) {
+    const name = rule.toLocaleLowerCase()
+    const value = css[rule]
+    const valueType = typeof value
+    const hasLeft = name.includes("left")
+    const hasRight = name.includes("right")
+		const hasShortcut = Object.keys(shortcutMap).includes(name)
+    const isDirectional = hasLeft || hasRight || hasShortcut
+    const isPrimitive = ["number", "string"].includes(valueType)
+
+    if (isPrimitive && isDirectional) {
+      let reverse = ""
+      styles["[dir='ltr'] &"] = styles["[dir='ltr'] &"] ?? {}
+      styles["[dir='rtl'] &"] = styles["[dir='rtl'] &"] ?? {}
+
+      // Create reverse direction rule
+      if (hasLeft) {
+        reverse = rule.replaceAll("left", "right").replaceAll("Left", "Right")
+      } else if (hasRight) {
+        reverse = rule.replaceAll("right", "left").replaceAll("Right", "Left")
+      } else if (hasShortcut) {
+        reverse = shortcutMap[rule] ?? rule
+      }
+      styles["[dir='ltr'] &"][rule] = value
+      styles["[dir='rtl'] &"][reverse] = value
+    } else if (valueType === "object") {
+      styles[rule] = generateDirectionalCSS(value)
+    } else {
+			styles[rule] = value
+		}
+  }
+
+	return styles
+}
+
+
 export const toCssRules = (
 	/** @type {Style} */ style,
 	/** @type {string[]} */ selectors,
@@ -145,7 +199,8 @@ export const toCssRules = (
 		currentRule = undefined
 	}
 
-	walk(style, selectors, conditions)
+	// Account for RTL languages
+	walk(generateDirectionalCSS(style), selectors, conditions)
 }
 
 const toCssString = (/** @type {string[]} */ declarations, /** @type {string[]} */ selectors, /** @type {string[]} */ conditions) => (
