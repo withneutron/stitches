@@ -6,6 +6,7 @@ import { toResolvedSelectors } from './toResolvedSelectors.js'
 import { toSizingValue } from './toSizingValue.js'
 import { toTailDashed } from './toTailDashed.js'
 import { toTokenizedValue } from './toTokenizedValue.js'
+import { generateDirectionalCSS } from '../utility/l10n.js'
 
 /** @typedef {import('../createStitches.js').Config} Config */
 /** @typedef {import('../createStitches.js').Style} Style */
@@ -145,7 +146,8 @@ export const toCssRules = (
 		currentRule = undefined
 	}
 
-	walk(style, selectors, conditions)
+	// Account for RTL languages
+	walk(generateDirectionalCSS(style), selectors, conditions)
 }
 
 const toCssString = (/** @type {string[]} */ declarations, /** @type {string[]} */ selectors, /** @type {string[]} */ conditions) => (

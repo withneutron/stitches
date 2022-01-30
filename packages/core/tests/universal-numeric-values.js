@@ -1,4 +1,5 @@
 import { createStitches } from '../src/index.js'
+import { utilMap, directionalCommonProps } from '../src/utility/l10n.js'
 
 describe('Numeric Values', () => {
 	test('Authors can use numeric values to assign px values', () => {
@@ -132,6 +133,7 @@ describe('Numeric Values', () => {
 
 	for (const prop of commonProps) {
 		const kebabProp = prop.replace(/[A-Z]/g, (letter) => '-' + letter.toLowerCase())
+		const rtlProp = utilMap[prop].replace(/[A-Z]/g, (letter) => '-' + letter.toLowerCase())
 
 		test(`Author can use the unit-only ${kebabProp} property`, () => {
 			for (let i = 0; i <= 33; i += 11) {
@@ -144,12 +146,15 @@ describe('Numeric Values', () => {
 				})()
 
 				const cssText = getCssText().replace(/^.+@media\{|\}$/g, '')
+				const suffix = i ? 'px' : ''
+				let expected = `div{${kebabProp}:${i}${suffix}}`
+				const rtl = `div{${rtlProp}:${i}${suffix}}`
 
-				expect(cssText).toBe(
-					`div{` +
-						kebabProp + `:` + i + (i ? 'px' : '') +
-					`}`
-				)
+				if (directionalCommonProps.includes(prop)) {
+					expected = `[dir='ltr'] ${expected}[dir='rtl'] ${rtl}`
+				}
+
+				expect(cssText).toBe(expected)
 			}
 		})
 	}

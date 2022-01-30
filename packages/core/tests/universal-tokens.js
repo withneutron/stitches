@@ -173,7 +173,9 @@ describe('Tokens', () => {
 				`:root,.t-hxjLZl{--space-sp1:100px;--space-sp2:200px}` +
 			`}` +
 			`--sxs{--sxs:1 kTSGli}@media{` +
-				`article{margin-left:calc(var(--space-sp1)*-1);margin-top:calc(var(--space-sp2)*-1)}` +
+				`[dir='ltr'] article{margin-left:calc(var(--space-sp1)*-1)}` +
+				`[dir='rtl'] article{margin-right:calc(var(--space-sp1)*-1)}` +
+				`article{margin-top:calc(var(--space-sp2)*-1)}` +
 			`}`
 		)
 	})
@@ -201,13 +203,15 @@ describe('Tokens', () => {
 				`:root,.t-ereMzu{--sizes-sp1:10px;--sizes-sp2:20px;--sizes-sp3:30px}` +
 			`}` +
 			`--sxs{--sxs:1 kuTEdV}@media{` +
-				`article{margin-left:calc(var(--sizes-sp1)*-1);width:var(--sizes-sp1)}` +
+				`[dir='ltr'] article{margin-left:calc(var(--sizes-sp1)*-1)}` +
+				`[dir='rtl'] article{margin-right:calc(var(--sizes-sp1)*-1)}` +
+				`article{width:var(--sizes-sp1)}` +
 			`}`
 		)
 	})
 
-	test('Authors can use tokens from the globalCss theme object', () => {
-		const { globalCss, theme, getCssText } = createStitches({
+	test('Authors can use tokens from the globalCss theme object (1)', () => {
+		const { globalCss, getCssText } = createStitches({
 			theme: {
 				space: {
 					sp1: '100px',
@@ -218,8 +222,8 @@ describe('Tokens', () => {
 
 		globalCss({
 			article: {
-				marginLeft: theme.space.sp1,
-				marginTop: theme.space.sp2,
+				marginLeft: '$sp1',
+				marginTop: '$sp2',
 			},
 		})()
 
@@ -227,8 +231,10 @@ describe('Tokens', () => {
 			`--sxs{--sxs:0 t-hxjLZl}@media{` +
 				`:root,.t-hxjLZl{--space-sp1:100px;--space-sp2:200px}` +
 			`}` +
-			`--sxs{--sxs:1 lcIUgV}@media{` +
-				`article{margin-left:var(--space-sp1);margin-top:var(--space-sp2)}` +
+			`--sxs{--sxs:1 dSBTvq}@media{` +
+				`[dir='ltr'] article{margin-left:var(--space-sp1)}` +
+				`[dir='rtl'] article{margin-right:var(--space-sp1)}` +
+				`article{margin-top:var(--space-sp2)}` +
 			`}`
 		)
 	})
@@ -245,13 +251,17 @@ describe('Tokens', () => {
 
 		globalCss({
 			article: {
-				marginLeft: mytheme.space.sp1,
-				marginTop: mytheme.space.sp2,
+				marginLeft: '$sp1',
+				marginTop: '$sp2',
 			},
 		})()
 
 		expect(getCssText()).toBe(
-			`--sxs{--sxs:1 lcIUgV}@media{article{margin-left:var(--space-sp1);margin-top:var(--space-sp2)}}`,
+			`--sxs{--sxs:1 dSBTvq}@media{` +
+				`[dir='ltr'] article{margin-left:var(--space-sp1)}` +
+				`[dir='rtl'] article{margin-right:var(--space-sp1)}` +
+				`article{margin-top:var(--space-sp2)}` +
+			`}`,
 		)
 
 		void `${mytheme}`
@@ -259,14 +269,16 @@ describe('Tokens', () => {
 		expect(getCssText()).toBe(
 			`--sxs{--sxs:0 my-theme}@media{` +
 				`.my-theme{--space-sp1:100px;--space-sp2:200px}` +
-			`}--sxs{--sxs:1 lcIUgV}@media{` +
-				`article{margin-left:var(--space-sp1);margin-top:var(--space-sp2)}` +
+			`}--sxs{--sxs:1 dSBTvq}@media{` +
+				`[dir='ltr'] article{margin-left:var(--space-sp1)}` +
+				`[dir='rtl'] article{margin-right:var(--space-sp1)}` +
+				`article{margin-top:var(--space-sp2)}` +
 			`}`
 		)
 	})
 
-	test('Authors can use tokens from the globalCss theme object', () => {
-		const { globalCss, theme, getCssText } = createStitches({
+	test('Authors can use tokens from the globalCss theme object (2)', () => {
+		const { globalCss, getCssText } = createStitches({
 			theme: {
 				space: {
 					sp1: '100px',
@@ -277,8 +289,8 @@ describe('Tokens', () => {
 
 		globalCss({
 			article: {
-				marginLeft: theme.space.sp1,
-				marginTop: theme.space.sp2,
+				marginLeft: '$sp1',
+				marginTop: '$sp2',
 			},
 		})()
 
@@ -286,8 +298,10 @@ describe('Tokens', () => {
 			`--sxs{--sxs:0 t-hxjLZl}@media{` +
 				`:root,.t-hxjLZl{--space-sp1:100px;--space-sp2:200px}` +
 			`}` +
-			`--sxs{--sxs:1 lcIUgV}@media{` +
-				`article{margin-left:var(--space-sp1);margin-top:var(--space-sp2)}` +
+			`--sxs{--sxs:1 dSBTvq}@media{` +
+				`[dir='ltr'] article{margin-left:var(--space-sp1)}` +
+				`[dir='rtl'] article{margin-right:var(--space-sp1)}` +
+				`article{margin-top:var(--space-sp2)}` +
 			`}`
 		)
 	})
@@ -330,7 +344,8 @@ describe('Tokens', () => {
 			`--sxs{--sxs:0 t-bhZLEQ}@media{` +
 				`:root,.t-bhZLEQ{--sizes-five:5px}` +
 			`}--sxs{--sxs:1 gvABwA}@media{` +
-				`body{margin-left:calc(var(--sizes-five)*5)}` +
+				`[dir='ltr'] body{margin-left:calc(var(--sizes-five)*5)}` +
+				`[dir='rtl'] body{margin-right:calc(var(--sizes-five)*5)}` +
 			`}`
 		)
 	})
