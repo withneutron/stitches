@@ -46,7 +46,7 @@ describe('React', () => {
 		expect(sheet.toString()).toEqual(
 			`--sxs{--sxs:2 c-iSEgvG}@media{` +
 				`.c-iSEgvG{` +
-					`background-color:gainsboro;` +
+					`background-color:gainsboro}.c-iSEgvG{` +
 					`border-radius:9999px;` +
 					`font-weight:500;` +
 					`padding:0.75em 1em;` +

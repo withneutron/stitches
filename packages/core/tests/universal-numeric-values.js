@@ -150,7 +150,7 @@ describe('Numeric Values', () => {
 				let expected = `div{${kebabProp}:${i}${suffix}}`
 				const rtl = `div{${rtlProp}:${i}${suffix}}`
 
-				if (directionalCommonProps.includes(prop)) {
+				if (directionalCommonProps[prop]) {
 					expected = `[dir='ltr'] ${expected}[dir='rtl'] ${rtl}`
 				}
 
