@@ -21,8 +21,7 @@ const isSheetAccessible = (/** @type {CSSStyleSheet} */ sheet) => {
 	}
 
 	try {
-		sheet.cssRules
-		return true
+		return !!sheet.cssRules
 	} catch (e) {
 		return false
 	}
@@ -31,6 +30,33 @@ const isSheetAccessible = (/** @type {CSSStyleSheet} */ sheet) => {
 export const createSheet = (/** @type {DocumentOrShadowRoot} */ root) => {
 	/** @type {SheetGroup} Object hosting the hydrated stylesheet. */
 	let groupSheet
+
+	const toString = () => {
+		const { cssRules } = groupSheet.sheet
+		return [].map
+			.call(cssRules, (cssRule, cssRuleIndex) => {
+				const { cssText } = cssRule
+
+				let lastRuleCssText = ''
+
+				if (cssText.startsWith('--sxs')) return ''
+
+				if (cssRules[cssRuleIndex - 1] && (lastRuleCssText = cssRules[cssRuleIndex - 1].cssText).startsWith('--sxs')) {
+					if (!cssRule.cssRules.length) return ''
+
+					for (const name in groupSheet.rules) {
+						if (groupSheet.rules[name].group === cssRule) {
+							return `--sxs{--sxs:${[...groupSheet.rules[name].cache].join(' ')}}${cssText}`
+						}
+					}
+
+					return cssRule.cssRules.length ? `${lastRuleCssText}${cssText}` : ''
+				}
+
+				return cssText
+			})
+			.join('')
+	}
 
 	const reset = () => {
 		if (groupSheet) {
@@ -83,7 +109,7 @@ export const createSheet = (/** @type {DocumentOrShadowRoot} */ root) => {
 				if (!groupName) continue
 
 				// create a group sheet if one does not already exist
-				if (!groupSheet) groupSheet = { sheet, reset, rules: {} }
+				if (!groupSheet) groupSheet = { sheet, reset, rules: {}, toString }
 
 				// add the group to the group sheet
 				groupSheet.rules[groupName] = { group, index, cache: new Set(cache) }
@@ -115,32 +141,7 @@ export const createSheet = (/** @type {DocumentOrShadowRoot} */ root) => {
 				sheet: root ? (root.head || root).appendChild(document.createElement('style')).sheet : createCSSMediaRule('', 'text/css'),
 				rules: {},
 				reset,
-				toString() {
-					const { cssRules } = groupSheet.sheet
-					return [].map
-						.call(cssRules, (cssRule, cssRuleIndex) => {
-							const { cssText } = cssRule
-
-							let lastRuleCssText = ''
-
-							if (cssText.startsWith('--sxs')) return ''
-
-							if (cssRules[cssRuleIndex - 1] && (lastRuleCssText = cssRules[cssRuleIndex - 1].cssText).startsWith('--sxs')) {
-								if (!cssRule.cssRules.length) return ''
-
-								for (const name in groupSheet.rules) {
-									if (groupSheet.rules[name].group === cssRule) {
-										return `--sxs{--sxs:${[...groupSheet.rules[name].cache].join(' ')}}${cssText}`
-									}
-								}
-
-								return cssRule.cssRules.length ? `${lastRuleCssText}${cssText}` : ''
-							}
-
-							return cssText
-						})
-						.join('')
-				},
+				toString,
 			}
 		}
 
@@ -178,7 +179,7 @@ const addApplyToGroup = (/** @type {RuleGroup} */ group) => {
 			groupingRule.insertRule(cssText, index)
 
 			++index
-		} catch {
+		} catch (__) {
 			// do nothing and continue
 		}
 	}
