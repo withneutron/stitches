@@ -6,7 +6,6 @@ import { toResolvedSelectors } from './toResolvedSelectors.js'
 import { toSizingValue } from './toSizingValue.js'
 import { toTailDashed } from './toTailDashed.js'
 import { toTokenizedValue } from './toTokenizedValue.js'
-import { generateDirectionalCSS } from '../utility/l10n.js'
 
 /** @typedef {import('../createStitches.js').Config} Config */
 /** @typedef {import('../createStitches.js').Style} Style */
@@ -18,12 +17,15 @@ const comma = /\s*,\s*(?![^()]*\))/
 const toStringOfObject = Object.prototype.toString
 
 export const toCssRules = (
-	/** @type {Style} */ style,
-	/** @type {string[]} */ selectors,
-	/** @type {string[]} */ conditions,
+	/** @type {Style} */ outerStyle,
+	/** @type {string[]} */ outerSelectors,
+	/** @type {string[]} */ outerConditions,
 	/** @type {Config} */ config,
 	/** @type {(cssText: string) => any} */ onCssText
 ) => {
+	/** Function that allows a CSS processor to apply styles */
+	const applyCssRule = (ruleToApply) => onCssText(toCssString(...ruleToApply))
+
 	/** @type {[string[], string[], string[]]} CSSOM-compatible rule being created. */
 	let currentRule = undefined
 
@@ -102,6 +104,7 @@ export const toCssRules = (
 						/** Next selectors, which may include one new selector (if this is not an at-rule). */
 						const nextSelections = isAtRuleLike ? [...selectors] : toResolvedSelectors(selectors, name.split(comma))
 
+						currentRule = config.cssPostProcessor(currentRule, outerStyle, applyCssRule)
 						if (currentRule !== undefined) {
 							onCssText(toCssString(...currentRule))
 						}
@@ -140,6 +143,7 @@ export const toCssRules = (
 
 		each(style)
 
+		currentRule = config.cssPostProcessor(currentRule, outerStyle, applyCssRule)
 		if (currentRule !== undefined) {
 			onCssText(toCssString(...currentRule))
 		}
@@ -147,7 +151,7 @@ export const toCssRules = (
 	}
 
 	// Account for RTL languages
-	walk(generateDirectionalCSS(style), selectors, conditions)
+	walk(config.cssPreProcessor(outerStyle), outerSelectors, outerConditions)
 }
 
 const toCssString = (/** @type {string[]} */ declarations, /** @type {string[]} */ selectors, /** @type {string[]} */ conditions) => (

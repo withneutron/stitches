@@ -26,6 +26,8 @@ export const createStitches = (config) => {
 		const theme = typeof initConfig.theme === 'object' && initConfig.theme || {}
 		const themeMap = typeof initConfig.themeMap === 'object' && initConfig.themeMap || { ...defaultThemeMap }
 		const utils = typeof initConfig.utils === 'object' && initConfig.utils || {}
+		const cssPreProcessor = typeof initConfig.cssPreProcessor === 'function' && initConfig.cssPreProcessor || ((styles) => styles)
+		const cssPostProcessor = typeof initConfig.cssPostProcessor === 'function' && initConfig.cssPostProcessor || ((rule) => rule)
 
 		/** External configuration. */
 		const config = {
@@ -34,6 +36,8 @@ export const createStitches = (config) => {
 			theme,
 			themeMap,
 			utils,
+			cssPreProcessor,
+			cssPostProcessor,
 		}
 
 		/** Internal stylesheet. */

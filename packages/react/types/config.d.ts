@@ -1,10 +1,19 @@
 import type * as CSSUtil from './css-util'
 import type Stitches from './stitches'
 
+type CssStyleObject = Record<string, any>
+type CssRuleTuple = [string[], string[], string[]]
+
 /** Configuration Interface */
 declare namespace ConfigType {
 	/** Prefix interface. */
 	export type Prefix<T = ''> = T extends string ? T: string
+
+	/** CSS pre-processor interface. */
+	export type CssPreProcessor = (styles: CssStyleObject) => CssStyleObject
+
+	/** CSS post-processor interface. */
+	export type CssPostProcessor = (rule: CssRuleTuple, outerStyle: CssStyleObject, applyCssRule: (result: CssRuleTuple) => void) => CssRuleTuple | undefined
 
 	/** Media interface. */
 	export type Media<T = {}> = {
@@ -201,6 +210,8 @@ export type CreateStitches = {
 	>(
 		config?: {
 			prefix?: ConfigType.Prefix<Prefix>
+			cssPreProcessor?: ConfigType.CssPreProcessor
+			cssPostProcessor?: ConfigType.CssPostProcessor
 			media?: ConfigType.Media<Media>
 			theme?: ConfigType.Theme<Theme>
 			themeMap?: ConfigType.ThemeMap<ThemeMap>
