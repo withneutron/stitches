@@ -44,20 +44,7 @@ describe('React', () => {
 		})
 
 		expect(sheet.toString()).toEqual(
-			`--sxs{--sxs:2 c-iSEgvG}@media{` +
-				`.c-iSEgvG{` +
-					`background-color:gainsboro}.c-iSEgvG{` +
-					`border-radius:9999px;` +
-					`font-weight:500;` +
-					`padding:0.75em 1em;` +
-					`border:0;` +
-					`transition:all 200ms ease` +
-				`}` +
-				`.c-iSEgvG:hover{` +
-					`transform:translateY(-2px);` +
-					`box-shadow:0 10px 25px rgba(0, 0, 0, .3)` +
-				`}` +
-			`}`
+			`--sxs{--sxs:2 c-iSEgvG}@media{.c-iSEgvG{background-color:gainsboro;border-radius:9999px;font-weight:500;padding:0.75em 1em;border:0;transition:all 200ms ease}.c-iSEgvG:hover{transform:translateY(-2px);box-shadow:0 10px 25px rgba(0, 0, 0, .3)}}`
 		)
 	})
 })
