@@ -4,12 +4,12 @@ describe('Serialization', () => {
 	const sheet = createStitches()
 	const { styled, getCssText, toString, createTheme } = sheet
 
-	const myComponent = styled('button', {
+	const myComponent = styled.withName('myComponent', 'button', {
 		all: 'unset',
 		font: 'inherit',
 		margin: 0,
 		padding: '0.5em 1em',
-	}).named('myComponent')
+	})
 	const baseSelector = '.c-myComponent-cLikna'
 	const myComponentSelector = `${baseSelector}:where(.c-myComponent-PJLV)`
 
