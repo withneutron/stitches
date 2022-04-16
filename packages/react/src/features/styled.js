@@ -16,7 +16,7 @@ export const createStyledFunction = ({ /** @type {Config} */ config, /** @type {
 		const css = createCssFunction(config, sheet)
 
 		const styled = (...args) => {
-			const cssComponent = css(...args)
+			let cssComponent = css(...args)
 			const DefaultType = cssComponent[internal].type
 
 			const styledComponent = React.forwardRef((props, ref) => {
@@ -35,11 +35,23 @@ export const createStyledFunction = ({ /** @type {Config} */ config, /** @type {
 				return React.createElement(Type, forwardProps)
 			})
 
+			const named =
+				(/** @type {string} */ componentName) => {
+					componentName = componentName.replace(/\./g, '_').replace(/\W/g, '')
+					if (!styledComponent.className.includes(componentName)) {
+						cssComponent = css(...args, { componentName })
+						styledComponent.className = cssComponent.className
+						styledComponent.selector = cssComponent.selector
+						styledComponent.displayName = componentName
+					}
+					return styledComponent
+				}
 			const toString = () => cssComponent.selector
 
 			styledComponent.className = cssComponent.className
 			styledComponent.displayName = `Styled.${DefaultType.displayName || DefaultType.name || DefaultType}`
 			styledComponent.selector = cssComponent.selector
+			styledComponent.named = named
 			styledComponent.toString = toString
 			styledComponent[internal] = cssComponent[internal]
 
